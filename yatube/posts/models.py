@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
+TEXT_CONSTANT = 25
 
 
 class Group(models.Model):
@@ -11,6 +12,8 @@ class Group(models.Model):
 
     class Meta:
         ordering = ('-title',)
+        verbose_name = "Группа"
+        verbose_name_plural = "Группы"
 
     def __str__(self):
         return self.title
@@ -45,9 +48,11 @@ class Post(models.Model):
 
     class Meta:
         ordering = (['-pub_date'])
+        verbose_name = "Пост"
+        verbose_name_plural = "Посты"
 
     def __str__(self):
-        return self.text
+        return self.text[:TEXT_CONSTANT]
 
 
 class Comment(models.Model):
@@ -69,8 +74,12 @@ class Comment(models.Model):
         verbose_name='Создан'
     )
 
+    class Meta:
+        verbose_name = "Коментарий"
+        verbose_name_plural = "Коментарии"
+
     def __str__(self):
-        return self.text
+        return self.text[:TEXT_CONSTANT]
 
 
 class Follow(models.Model):
@@ -86,6 +95,10 @@ class Follow(models.Model):
         related_name='following',
         verbose_name='Автор'
     )
+
+    class Meta:
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
 
     def __str__(self):
         return f'{self.user} подписался на {self.author}'

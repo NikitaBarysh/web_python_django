@@ -54,7 +54,6 @@ def post_detail(request, post_id):
     form = CommentForm()
     context = {
         'post': post,
-        'requser': request.user,
         'comments': comments,
         'form': form,
     }
@@ -63,11 +62,10 @@ def post_detail(request, post_id):
 
 def group_list(request, slug):
     group = get_object_or_404(Group, slug=slug)
-    posts = group.posts.all()[:settings.POSTS_PER_PAGE]
+    posts = group.posts.all()
     page_obj = get_page_obj(posts, request)
     context = {
         'group': group,
-        'posts': posts,
         'page_obj': page_obj,
     }
     return render(request, 'posts/group_list.html', context)
@@ -90,25 +88,23 @@ def post_create(request):
 
 @login_required
 def post_edit(request, post_id):
-    is_edit = get_object_or_404(Post, pk=post_id)
+    post_edit = get_object_or_404(Post, pk=post_id)
     form = PostForm(
         request.POST,
-        instance=is_edit,
+        instance=post_edit,
         files=request.FILES or None
     )
 
-    if is_edit.author != request.user:
+    if post_edit.author != request.user:
         return redirect('posts:post_detail', post_id)
 
     if request.method != 'POST' or not form.is_valid():
-        form = PostForm(instance=is_edit)
         return render(
             request,
             'posts/post_create.html',
             {
                 'form': form,
-                'post_id': post_id,
-                'is_edit': is_edit
+                'post_edit': True,
             }
         )
 
